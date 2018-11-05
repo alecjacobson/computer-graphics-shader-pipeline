@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>markdown
+&lt;!-- For some reason having this &quot;title: markdown&quot; line triggers multimarkdown
+into adding a proper header and DOCTYPE necessary for unicode text --&gt;</title>
+</head>
+<body>
+
+<p><link rel="stylesheet" href="file:///Users/ajx/.markdown/github-markdown.css">
+<style>
+ .markdown-body {
+ box-sizing: border-box;
+ min-width: 200px;
+ max-width: 980px;
+ margin: 0 auto;
+ padding: 45px;
+ }</p>
+
+<pre><code>@media (max-width: 767px) {
+    .markdown-body {
+        padding: 15px;
+    }
+}
+</code></pre>
+
+<p></style>
+<article class="markdown-body"></p>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({ TeX: { equationNumbers: {autoNumber: "all"} } });
+</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<h1 id="computergraphics–shaderpipeline">Computer Graphics – Shader Pipeline</h1>
+
+<blockquote>
+<p><strong>Do not fork:</strong> Clicking &#8220;Fork&#8221; will create a <em>public</em> repository. If you&#8217;d
+like to use GitHub while you work on your assignment, then mirror this repo as
+a new <em>private</em> repository:
+https://stackoverflow.com/questions/10065526/github-how-to-make-a-fork-of-public-repository-private</p>
+</blockquote>
+
+<h2 id="background">Background</h2>
+
+<h3 id="reviewchapters67andsections8.1-8.2offundamentalsofcomputergraphics4thedition.">Review chapters 6, 7 and sections 8.1&#8211;8.2 of <em>Fundamentals of Computer Graphics (4th Edition)</em>.</h3>
+
+<h3 id="readsections11.4-11.5andchapter17offundamentalsofcomputergraphics4thedition.">Read Sections 11.4&#8211;11.5 and Chapter 17 of <em>Fundamentals of Computer Graphics (4th Edition)</em>.</h3>
+
+<p>In this assignment, we will use the &#8220;real-time rendering&#8221; shader pipeline and
+procedural rendering to create interesting pictures.</p>
+
+<h3 id="glsl">GLSL</h3>
+
+<p>Your work will be implemented using the <a href="https://en.wikipedia.org/wiki/OpenGL_Shading_Language">OpenGL shading language
+(glsl)</a>. In many ways,
+glsl code looks like C++ code. However, there are many builtin linear algebra
+types (e.g., <code>vec3</code> is a 3D-vector type) and geometric functions (e.g.,
+<code>dot(a,b)</code> computes the <a href="https://en.wikipedia.org/wiki/Dot_product">dot product</a>
+between vectors <code>a</code> and <code>b</code>. Since vectors are often used to represent spatial
+coordinates <em>or</em> colors. We can index the coordinates of a vector (<code>vec3 a</code>)
+using <code>a.r</code>, <code>a.g</code>, <code>a.b</code> or <code>a.x</code>, <code>a.y</code>, <code>a.z</code>. When working with <a href="https://en.wikipedia.org/wiki/3D_projection#Perspective_projection">perspective
+projection</a>
+it&#8217;s often useful to employ 4D <a href="https://en.wikipedia.org/wiki/Homogeneous_coordinates">homogeneous
+coordinates</a> vectors:
+<code>vec4</code> in glsl. Glsl has many builtin ways to work with differently sized
+vectors and matrices. For example, if we have <code>vec4 h</code> then we can write <code>vec3 p
+= h.xyz;</code> to grab the first three coordinates. Similarly, we could write: <code>vec4
+h = vec4(p,1.0)</code> to convert a 3D Cartesian point to a 4D homogeneous point.</p>
+
+<p>Fortunately, there are many online resources and googling a glsl-related
+question often returns helpful answers.</p>
+
+<h3 id="onthecpuside">On the CPU side</h3>
+
+<p>The shaders you write in this assignment will run on the
+<a href="https://en.wikipedia.org/wiki/Graphics_processing_unit">GPU</a>. Let&#8217;s breifly
+describe what&#8217;s happening on the
+<a href="https://en.wikipedia.org/wiki/Central_processing_unit">CPU</a> side.</p>
+
+<p>A pseudo-code version of <code>main.cpp</code> might look like:</p>
+
+<pre><code>main()
+  initialize window
+  copy mesh vertex positions V and face indices F to GPU
+  while window is open
+    if shaders have not been compiled or files have changed 
+      compile shaders and send to GPU
+    send &quot;uniform&quot; data to GPU
+    set all pixels to background color
+    tell GPU to draw mesh
+    sleep a few milliseconds
+</code></pre>
+
+<h4 id="window">Window</h4>
+
+<p>Creating a window is clearly something that will depend on the operating system
+(e.g., Mac OS X, Linux, Windows). This assignment, like many small scale
+graphics programs or games, uses an open source windowing toolkit called
+<a href="https://en.wikipedia.org/wiki/GLFW">glfw</a>. It works on all major operating
+systems. Once the window is open we have access to its contents as an RGB image.
+The job of our programs are to fill in all the pixels of this image with colors.
+The windowing toolkit also handles interactions with the mouse and keyboard as
+well as window resizing.</p>
+
+<h4 id="shadercompilation">Shader compilation</h4>
+
+<p>Unlike your C++ code, shaders are compiled <em>at runtime</em>. This has a nice
+advantage that you can change your shaders without restarting the main program.
+So long as the change is noticed and the shaders are recompiled, the rendering
+will be immediately updated.</p>
+
+<p>Compilation errors (usually syntax errors) will be output from the main program
+and the window will turn black (background color). For example, if your
+<em>fragment shader</em> contained:</p>
+
+<pre><code>#version 410 core
+in vec3 pos_fs_in;
+out vec3 color;
+void main()
+{
+  color = pos_fs_in.x;
+}
+</code></pre>
+
+<p>You would see an error printed to the screen:</p>
+
+<pre><code>ERROR: failed to compile fragment shader
+ERROR: 0:6: Incompatible types (vec3 and float) in assignment (and no available implicit conversion)
+
+ERROR: One or more attached shaders not successfully compiled
+
+ERROR: Failed to link shader program
+</code></pre>
+
+<p>If you change this file, the main program should immediately notice the change
+before drawing the next frame. If successful there will be no error message and
+the screen may now draw something interesting.</p>
+
+<h4 id="dataonthegpu">Data on the GPU</h4>
+
+<p>From the perspective of the shader pipeline, data on the GPU is separated into
+different types. For example, when we send the mesh vertex positions to the GPU
+we&#8217;re associating one 3D position <em>per vertex</em>. This data is considered an
+&#8220;attribute&#8221; of each vertex. Each vertex invokes a single execution of the vertex
+shader and its corresponding position is given as the <code>in vec3 pos_vs_in;</code>
+variable. The output of the vertex shader will be &#8220;varying&#8221; depending on the
+input and computation conducted. Your program is responsible for setting this
+output value in <code>out vec3 pos_cs_in</code>. This variable is named ending with
+<code>_cs_in</code> because it will in turn be used as input to the next shader in the
+pipeline <em>tessellation control shader</em>.</p>
+
+<p>Small amounts of data that is constant and independent of the particular
+vertex/tessellation patch/fragment being processed is labeled as &#8220;uniform&#8221; data.
+The prototypical example of this is the perspective projection matrix: <code>uniform
+mat4 proj</code>. Uniform data is usually changed once per draw frame (e.g., <code>uniform
+float time_since_start</code> is updated with the number of seconds since the start of
+the program) or once per &#8220;object&#8221; (e.g., <code>uniform bool is_moon;</code> is set based on
+whether we&#8217;re drawing the first or second object in our scene).</p>
+
+<p>Large amounts of data that may be randomly accessed by shaders is stored in
+&#8220;texture&#8221; memory (e.g., color texture images). This data must be accessed by
+sampling specific pixel values based on a given 2D locations (e.g., the U.V.
+mapping of a fragment).</p>
+
+<h3 id="tessellationcontrolshader">Tessellation Control Shader</h3>
+
+<p>The tessellation control shader determines how to subdivide each input &#8220;patch&#8221;
+(i.e., triangle). Unlike the subdivision we saw with <a href="https://en.wikipedia.org/wiki/Subdivision_surface">subdivision
+surfaces</a>. The exact pattern
+of the resulting triangulation is left largely to implementation. As the shader
+programmer, you have control over:</p>
+
+<ul>
+<li>the number of new edges each input each should split into
+(<code>gl_TessLevelOuter[1] = 5</code> means the edge across from vertex <code>0</code> (i.e., the
+edge between vertices <code>0</code> and <code>2</code>) should be split into 5 edges); and</li>
+<li>the number of edges to place toward the center of the patch
+(<code>gl_TessLevelInner[0] = 5</code> would be a good choice if
+<code>gl_TessLevelOuter[...] = 5</code> and a regular tessellation was desired).</li>
+</ul>
+
+<p>Unlike the vertex or fragment shader, the tessellation control shader has access
+to attribute information at <em>all</em> of the vertices of a triangle. The main
+responsibility of this shader is setting the <code>gl_TessLevelOuter</code> and
+<code>gl_TessLevelInner</code> variables.</p>
+
+<h2 id="tasks">Tasks</h2>
+
+<p>Unlike previous assignments, this assignment works best if you implement the
+following tasks <em>in order</em>.</p>
+
+<h3 id="whitelist">White list</h3>
+
+<ul>
+<li><code>mix</code></li>
+</ul>
+
+<h3 id="blacklist">Black list</h3>
+
+<h3 id="model_view_projection.vs"><code>model_view_projection.vs</code></h3>
+
+<h3 id="blue_and_gray.fs"><code>blue_and_gray.fs</code></h3>
+
+<figure>
+<img src="images/blue-and-gray.gif" alt="Running ./shader_pipeline ../src/model_view_projection.vs
+../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs should produce an
+animation of a gray moon orbiting around a blue
+planet." />
+<figcaption>Running <code>./shader_pipeline ../src/model_view_projection.vs
+../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs</code> should produce an
+animation of a gray moon orbiting around a blue
+planet.</figcaption>
+</figure>
+
+<figure>
+<img src="images/blue-and-gray-wireframe.gif" alt="Running ./shader_pipeline ../src/model_view_projection.vs
+../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs and pressing L should produce an
+animation of a gray moon orbiting around a blue
+planet in wireframe." />
+<figcaption>Running <code>./shader_pipeline ../src/model_view_projection.vs
+../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs</code> and pressing <code>L</code> should produce an
+animation of a gray moon orbiting around a blue
+planet in wireframe.</figcaption>
+</figure>
+
+<h3 id="5.tcs"><code>5.tcs</code></h3>
+
+<figure>
+<img src="images/5-wireframe.gif" alt="Running ./shader_pipeline ../src/model_view_projection.vs ../src/5.tcs
+../src/pass-through.tes ../src/blue_and_gray.fs and pressing L should produce an
+animation of a gray moon orbiting around a blue
+planet in wireframe with more triangles." />
+<figcaption>Running <code>./shader_pipeline ../src/model_view_projection.vs ../src/5.tcs
+../src/pass-through.tes ../src/blue_and_gray.fs</code> and pressing <code>L</code> should produce an
+animation of a gray moon orbiting around a blue
+planet in wireframe with more triangles.</figcaption>
+</figure>
+
+<h3 id="model_view_projection.tes"><code>model_view_projection.tes</code></h3>
+
+</body>
+</html>

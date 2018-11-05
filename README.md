@@ -190,19 +190,19 @@ following tasks _in order_.
 ### `blue_and_gray.fs`
 
 
-![Running `./shader_pipeline ../src/model_view_projection.vs
+![Running `./shaderpipeline ../src/model_view_projection.vs
 ../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs` should produce an
 animation of a gray moon orbiting around a blue
 planet.](images/blue-and-gray.gif)
 
-![Running `./shader_pipeline ../src/model_view_projection.vs
+![Running `./shaderpipeline ../src/model_view_projection.vs
 ../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs` and pressing `L` should produce an
 animation of a gray moon orbiting around a blue
 planet in wireframe.](images/blue-and-gray-wireframe.gif)
 
 ### `5.tcs`
 
-![Running `./shader_pipeline ../src/model_view_projection.vs ../src/5.tcs
+![Running `./shaderpipeline ../src/model_view_projection.vs ../src/5.tcs
 ../src/pass-through.tes ../src/blue_and_gray.fs` and pressing `L` should produce an
 animation of a gray moon orbiting around a blue
 planet in wireframe with more triangles.](images/5-wireframe.gif)

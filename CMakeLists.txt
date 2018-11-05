@@ -30,8 +30,11 @@ if(NOT TARGET glfw)
   add_subdirectory(${ROOT}/glfw glfw)
 endif()
 
+add_subdirectory(${ROOT}/glad glad)
+
 add_executable(${PROJECT_NAME} main.cpp)
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${OPENGL_INCLUDE_DIR})
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${ROOT}/eigen/)
-target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${ROOT}/glfw/)
-target_link_libraries(${PROJECT_NAME} glfw ${OPENGL_gl_LIBRARY})
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${ROOT}/glfw/include)
+target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${ROOT}/glad/include)
+target_link_libraries(${PROJECT_NAME} glfw ${OPENGL_gl_LIBRARY} glad)

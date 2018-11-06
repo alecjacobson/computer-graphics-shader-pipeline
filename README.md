@@ -6,6 +6,8 @@
 
 **Do not fork:** Clicking "Fork" will create a _public_ repository. If you'd like to use GitHub while you work on your assignment, then mirror this repo as a new _private_ repository: https://stackoverflow.com/questions/10065526/github-how-to-make-a-fork-of-public-repository-private
 
+![](images/earth.gif)
+
 ## Background
 
 ### Review chapters 6, 7 and sections 8.1-8.2 of _Fundamentals of Computer Graphics (4th Edition)_.
@@ -174,38 +176,149 @@ the 3D position. Like the vertex and tessellation control shader, this shader
 can change the 3D position of a vertex. This is the _last opportunity_ to do
 that, since the fragment shader cannot.
 
+### How come I can't use `#include`?
+
+Our glsl shader programs are not compiled from files. Instead the
+CPU-side program must read the file contents into memory as strings and provide
+the raw strings to the shader compiler. Unfortunately, this means there is no
+`#include` preprocessor directive and sharing code across different shaders is a
+burden.
+
+In this assignment, we will use a `.json` file to collect the different files
+whose contents are _**concatenated**_ to form the input string to be compiled
+for each shader. For example, in `data/test-01.json` you'll see:
+
+```
+{
+  "vertex": [ "../src/version410.glsl","../src/pass-through.vs"],
+  "tess_control": [ "../src/version410.glsl","../src/pass-through.tcs"],
+  "tess_evaluation": [ "../src/version410.glsl","../src/pass-through.tes"],
+  "fragment": [ "../src/version410.glsl","../src/pass-through.fs"]
+}
+```
+
+This indicates that the string for the vertex shader is the concatenation of two
+(2) files `../src/version410.glsl` and then `"../solution/pass-through.glsl`.
+Similarly, for each of the other shaders.
+
+### Shader debugging
+
+Debugging shader programs must be done visually. Since we only see the result of
+_all_ computation, we can use the shader pipeline's ability to set screen colors
+to debug _all_ computation simultaneously. For example, when debugging the
+fragment shader we can check all values at once by setting the pixel color to a
+value we expect (or don't expect) depending on the computation. A few useful
+commands come in handy:
+
+`color = 0.5+0.5*n;` will set the color based on the normal.
+![](images/normal-debug.png)
+
+`color = vec3(0.5,0.5,0)+vec3(0.5,0.5,0)*view_pos_fs_in.xyz` will set the color based on the 2D position.
+![](images/position-debug.png)
+
+`color = (1+(view_pos_fs_in.z - -3)/5)*vec3(1,1,1);` will set the color based on
+the distance to the camera in the z-direction.
+
+![](images/distance-debug.png)
+
+`color = vec3(float(is_moon),1,0);` will set the color to yellow or green based
+on a boolean value (in this case `is_moon`).
+
+![](images/bool-debug.png)
+
+
 ## Tasks
+
+### White list
+
+  - [`mix`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/mix.xhtml)
+  - [`normalize`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/normalize.xhtml)
+  - [`length`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/length.xhtml)
+  - [`clamp`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/clamp.xhtml)
+
+### Black list
+ 
+  - `noise1`
+  - `noise2`
+  - `noise3`
+  - `noise4`
 
 Unlike previous assignments, this assignment works best if you implement the
 following tasks _in order_.
 
-### White list
-
-  - `mix` 
-
-### Black list
-
-### `model_view_projection.vs`
-
-### `blue_and_gray.fs`
+Before editing anything be sure that your opengl and shader setup is correct. If you run `./shaderpipeline ../data/test-01.json` you should see this
+image: ![](images/test-01.png)
 
 
-![Running `./shaderpipeline ../src/model_view_projection.vs
-../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs` should produce an
-animation of a gray moon orbiting around a blue
-planet.](images/blue-and-gray.gif)
+### `src/identity.glsl`
 
-![Running `./shaderpipeline ../src/model_view_projection.vs
-../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs` and pressing `L` should produce an
-animation of a gray moon orbiting around a blue
-planet in wireframe.](images/blue-and-gray-wireframe.gif)
+### `src/uniform_scale.glsl`
 
-### `5.tcs`
+### `src/translate.glsl`
 
-![Running `./shaderpipeline ../src/model_view_projection.vs ../src/5.tcs
-../src/pass-through.tes ../src/blue_and_gray.fs` and pressing `L` should produce an
-animation of a gray moon orbiting around a blue
-planet in wireframe with more triangles.](images/5-wireframe.gif)
+### `src/rotate_about_y.glsl`
 
-### `model_view_projection.tes`
+### `src/model_view_projection.vs`
 
+### `src/blue_and_gray.fs`
+
+With these implemented you should now be able to run `./shaderpipeline
+../data/test-02.json` and see an animation of a gray moon orbiting around a blue
+planet: ![](images/test-02.gif)
+
+If you press `L` this should switch to a [wireframe]() rendering:
+![](images/test-02-wireframe.gif)
+
+### `src/5.tcs`
+
+Running `./shaderpipeline ../data/test-03.json` and pressing `L` should produce an
+animation of a gray moon orbiting around a blue planet in wireframe with more
+triangles: ![](images/test-03-wireframe.gif)
+
+### `snap_to_sphere.tes`
+
+Move your model-view-projection operations from the vertex shader (e.g.,
+`model_view_projection.vs`) to the tessellation evaluation shader. In addition,
+snap the vertices of each shape to the unit sphere before applying these
+transformations. This gives your shapes a round appearance if you run
+`./shaderpipeline ../data/test-04.json`: ![](images/test-04.gif)
+
+### `blinn_phong.glsl`
+
+### `lit.glsl`
+
+Running `./shaderpipeline ../data/test-05.json` adds light to the scene and we
+see a smooth appearance with specular highlights: ![](images/test-05.gif)
+
+### `random_direction.glsl`
+
+### `noise.glsl`
+
+### `procedural_color.glsl`
+
+Running `./shaderpipeline ../data/test-06.json` adds a procedural _color_ to the
+objects. The color should _**not**_ change based on the view or model
+transformation. For example, this animation attempts to recreate a
+[marble](https://en.wikipedia.org/wiki/Marble) texture: ![](images/test-06.gif)
+
+### `improved_smooth_step.glsl`
+
+### `smooth_heaviside.glsl`
+
+### `improved_perlin_noise.glsl`
+
+### `bump_position.glsl`
+
+### `bump.fs`
+
+Running `./shaderpipeline ../data/test-07.json` adds a [normal
+map](https://en.wikipedia.org/wiki/Normal_mapping) determined by differentiating
+a procedural [bump map](https://en.wikipedia.org/wiki/Bump_mapping). The color
+should _**not**_ change based on the view or model transformation. For example,
+this animation attempts to recreate the (very) bumpy appearance of planets and
+moons: ![](images/test-07.gif)
+
+### `planet.fs`
+
+Running `./shaderpipeline ../data/test-08.json` should display a creative planet
+scene. For example: ![](images/test-08.gif)

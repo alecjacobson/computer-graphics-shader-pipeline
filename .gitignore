@@ -33,3 +33,5 @@
 *.swp
 build/*
 *.DS_Store
+file_watcher
+solution/*

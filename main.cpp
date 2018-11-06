@@ -30,7 +30,7 @@ bool wire_frame = false;
 bool mouse_down = false;
 bool is_animating = true;
 double last_time = get_seconds();
-double time_since_start = 0;
+double animation_seconds = 0;
 int width =  640;
 int height = 360;
 // Whether display has high dpi (e.g., Mac retinas)
@@ -82,6 +82,7 @@ int main(int argc, char * argv[])
 Usage:
   [Click and drag]  to orbit view
   [Scroll]  to translate view in and out
+  A,a  toggle animation
   L,l  toggle wireframe rending
   Z,z  reset view to look along z-axis
 )";
@@ -122,8 +123,6 @@ Usage:
     proj(2,2) = -(far + near) / (far - near);
     proj(3,2) = -1.0;
     proj(2,3) = -(2.0 * far * near) / (far - near);
-    std::cout<<"proj : "<< std::endl << proj << std::endl << std::endl ;
-
   };
   // Set up window resizing
   glfwSetWindowSizeCallback(window,reshape);
@@ -208,6 +207,7 @@ Usage:
     });
 
   glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
   // Force compilation on first iteration through loop
   double time_of_last_shader_compilation = 0;
   double time_of_last_json_load = 0;
@@ -285,10 +285,10 @@ Usage:
       if(is_animating)
       {
         double now = get_seconds();
-        time_since_start += now - last_time;
+        animation_seconds += now - last_time;
         last_time = now;
       }
-      glUniform1f(glGetUniformLocation(prog_id,"time_since_start"),time_since_start);
+      glUniform1f(glGetUniformLocation(prog_id,"animation_seconds"),animation_seconds);
     }
     glUniformMatrix4fv(
       glGetUniformLocation(prog_id,"proj"),1,false,proj.data());

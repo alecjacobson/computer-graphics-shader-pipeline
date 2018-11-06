@@ -1,4 +1,6 @@
 // g++ -o file_watcher file_watcher.cpp -I include -std=c++11
+//
+// Appears to work correctly on mac and linux. Haven't tested on windows.
 
 #include "last_modification_time.h"
 #include "get_seconds.h"

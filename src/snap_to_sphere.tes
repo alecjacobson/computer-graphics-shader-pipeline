@@ -1,0 +1,35 @@
+// Hint: Crib from your model_view_projection.vs
+// Layout:
+//                                         Indicate that we're dealing with
+//                                         triangles in CCW order and using a
+//                                         sane spacing.
+layout(triangles, equal_spacing, ccw) in;
+// Uniforms
+uniform mat4 view;
+uniform mat4 proj;
+uniform float animation_seconds;
+uniform bool is_moon;
+// Inputs:
+//                    array of 3 3D path corner positions
+in vec4 pos_es_in[];
+// Outputs:
+//                   projected, view, and model transformed 3D position
+out vec4 pos_fs_in;
+//                        view and model transformed 3D position
+out vec4 view_pos_fs_in;
+//                      view and model transformed 3D normal
+out vec3 normal_fs_in;
+//                      3D position _before_ applying model, view or projection
+//                      transformations (e.g., point on unit sphere)
+out vec3 sphere_fs_in;
+// expects: interpolat, model, 
+void main()
+{
+  /////////////////////////////////////////////////////////////////////////////
+  // Replace with your code 
+  pos_fs_in = interpolate(gl_TessCoord, pos_es_in[0], pos_es_in[1], pos_es_in[2]);
+  gl_Position = pos_fs_in;
+  /////////////////////////////////////////////////////////////////////////////
+}
+
+

@@ -40,7 +40,6 @@ GLuint prog_id=0;
 Eigen::Affine3f view = 
   Eigen::Affine3f::Identity() * 
   Eigen::Translation3f(Eigen::Vector3f(0,0,-10));
-std::vector<Eigen::Affine3f,Eigen::aligned_allocator<Eigen::Affine3f> > model(2);
 Eigen::Matrix4f proj = Eigen::Matrix4f::Identity();
 
 GLuint VAO;
@@ -55,15 +54,6 @@ int main(int argc, char * argv[])
   std::vector<std::string> tess_control_shader_paths;
   std::vector<std::string> tess_evaluation_shader_paths;
   std::vector<std::string> fragment_shader_paths;
-  if(!read_json(argv[1],
-    vertex_shader_paths,
-    tess_control_shader_paths,
-    tess_evaluation_shader_paths,
-    fragment_shader_paths))
-  {
-    std::cerr<<"Failed to read "<<argv[1]<<std::endl;
-    return EXIT_FAILURE;
-  }
 
   // Initialize glfw window
   if(!glfwInit())
@@ -143,6 +133,16 @@ Usage:
     reshape(window,width_window,height_window);
   }
 
+  // Close the window if user presses ESC or CTRL+C
+  glfwSetKeyCallback(
+    window,
+    [](GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+      if(key == 256 || (key == 67 && (mods & GLFW_MOD_CONTROL)))
+      {
+        glfwSetWindowShouldClose(window,true);
+      }
+    });
   glfwSetCharModsCallback(
     window,
     [](GLFWwindow* window, unsigned int codepoint, int modifier)
@@ -210,8 +210,12 @@ Usage:
   glEnable(GL_DEPTH_TEST);
   // Force compilation on first iteration through loop
   double time_of_last_shader_compilation = 0;
+  double time_of_last_json_load = 0;
   const auto any_changed = 
-    [&time_of_last_shader_compilation](const std::vector<std::string> &paths)->bool
+    [](
+        const std::vector<std::string> &paths,
+        const double time_of_last_shader_compilation
+        )->bool
   {
     for(const auto & path : paths)
     {
@@ -224,20 +228,32 @@ Usage:
     return false;
   };
 
-  model[0] = Eigen::Affine3f::Identity();
-  model[1] = Eigen::Affine3f::Identity();
-
   float start_time = get_seconds();
   // Main display routine
   while (!glfwWindowShouldClose(window))
   {
     double tic = get_seconds();
 
+    if(any_changed({argv[1]},time_of_last_json_load))
+    {
+      std::cout<<"-----------------------------------------------"<<std::endl;
+      time_of_last_json_load = get_seconds();
+      if(!read_json(argv[1],
+            vertex_shader_paths,
+            tess_control_shader_paths,
+            tess_evaluation_shader_paths,
+            fragment_shader_paths))
+      {
+        std::cerr<<"Failed to read "<<argv[1]<<std::endl;
+      }
+      // force reload of shaders
+      time_of_last_shader_compilation = 0;
+    }
     if(
-      any_changed(vertex_shader_paths) ||
-      any_changed(tess_control_shader_paths) ||
-      any_changed(tess_evaluation_shader_paths) ||
-      any_changed(fragment_shader_paths))
+      any_changed(vertex_shader_paths         ,time_of_last_shader_compilation) ||
+      any_changed(tess_control_shader_paths   ,time_of_last_shader_compilation) ||
+      any_changed(tess_evaluation_shader_paths,time_of_last_shader_compilation) ||
+      any_changed(fragment_shader_paths       ,time_of_last_shader_compilation))
     {
       std::cout<<"-----------------------------------------------"<<std::endl;
       // remember the time we tried to compile
@@ -286,10 +302,8 @@ Usage:
     {
       glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
-    for(int i = 0;i<model.size();i++)
+    for(int i = 0;i<2;i++)
     {
-      glUniformMatrix4fv(
-        glGetUniformLocation(prog_id,"model"),1,false,model[i].matrix().data());
       glUniform1i(glGetUniformLocation(prog_id, "is_moon"), i==1);
       glBindVertexArray(VAO);
       glDrawElements(GL_PATCHES, F.size(), GL_UNSIGNED_INT, 0);

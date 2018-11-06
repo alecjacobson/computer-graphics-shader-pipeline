@@ -21,10 +21,10 @@ double last_modification_time(const std::string & path)
 {
   // https://www.rosettacode.org/wiki/File_modification_time#Windows
   FILETIME modtime;
-  SYSTEMTIME st;
+  //SYSTEMTIME st;
   HANDLE fh;
-  wchar_t date[80], time[80];
-  fh = CreateFileW(path, GENERIC_READ | FILE_WRITE_ATTRIBUTES,
+  std::wstring w_path = std::wstring(path.begin(), path.end());
+  fh = CreateFileW(w_path.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES,
       0, NULL, OPEN_EXISTING, 0, NULL);
   if(fh == INVALID_HANDLE_VALUE)
   {
@@ -35,7 +35,7 @@ double last_modification_time(const std::string & path)
     return -1;
   }
   // https://stackoverflow.com/a/19709740/148668
-  __int64* val = (__int64*) &ft;
+  __int64* val = (__int64*) &modtime;
   return static_cast<double>(*val) / 10000000.0 - 11644473600.0;
 }
 #else

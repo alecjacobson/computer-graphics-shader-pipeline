@@ -15,10 +15,11 @@
 
 // ANSI color codes for formatting iostream style output
 
-#ifdef IGL_REDRUM_NOOP
+#ifdef WIN32
 
 // Bold Red, etc.
 #define NORUM(X)     X
+#define BOLD(X)     X
 #define REDRUM(X)     X
 #define GREENRUM(X)   X
 #define YELLOWRUM(X)  X

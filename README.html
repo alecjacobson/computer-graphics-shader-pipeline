@@ -35,11 +35,17 @@ into adding a proper header and DOCTYPE necessary for unicode text --&gt;</title
 <h1 id="computergraphics–shaderpipeline">Computer Graphics – Shader Pipeline</h1>
 
 <blockquote>
-<p><strong>Do not fork:</strong> Clicking &#8220;Fork&#8221; will create a <em>public</em> repository. If you&#8217;d
-like to use GitHub while you work on your assignment, then mirror this repo as
-a new <em>private</em> repository:
-https://stackoverflow.com/questions/10065526/github-how-to-make-a-fork-of-public-repository-private</p>
+<p><strong>To get started:</strong> Clone this repository and all its <a href="https://git-scm.com/book/en/v2/Git-Tools-Submodules">submodule</a> dependencies using:</p>
+
+<pre><code>git clone --recursive https://github.com/alecjacobson/computer-graphics-shader-pipeline.git
+</code></pre>
 </blockquote>
+
+<p><strong>Do not fork:</strong> Clicking &#8220;Fork&#8221; will create a <em>public</em> repository. If you&#8217;d like to use GitHub while you work on your assignment, then mirror this repo as a new <em>private</em> repository: https://stackoverflow.com/questions/10065526/github-how-to-make-a-fork-of-public-repository-private</p>
+
+<figure>
+<img src="images/earth.gif" alt="" />
+</figure>
 
 <h2 id="background">Background</h2>
 
@@ -167,9 +173,10 @@ mapping of a fragment).</p>
 
 <p>The tessellation control shader determines how to subdivide each input &#8220;patch&#8221;
 (i.e., triangle). Unlike the subdivision we saw with <a href="https://en.wikipedia.org/wiki/Subdivision_surface">subdivision
-surfaces</a>. The exact pattern
-of the resulting triangulation is left largely to implementation. As the shader
-programmer, you have control over:</p>
+surfaces</a>, the subdivision is
+determined independently for each triangle and <em>not</em> called recursively.
+The exact pattern of the resulting triangulation is left largely to
+implementation. As the shader programmer, you have control over:</p>
 
 <ul>
 <li>the number of new edges each input each should split into
@@ -185,59 +192,180 @@ to attribute information at <em>all</em> of the vertices of a triangle. The main
 responsibility of this shader is setting the <code>gl_TessLevelOuter</code> and
 <code>gl_TessLevelInner</code> variables.</p>
 
-<h2 id="tasks">Tasks</h2>
+<blockquote>
+<p><strong>Question:</strong> If the amount of subdivision along each edge is determined
+indecently for each triangle, how can we make sure neighboring triangles
+subdivide their shared edge the same amount?</p>
 
-<p>Unlike previous assignments, this assignment works best if you implement the
-following tasks <em>in order</em>.</p>
+<p><strong>Hint:</strong> ✌️</p>
+</blockquote>
+
+<h3 id="tessellationevaluationshader">Tessellation Evaluation Shader</h3>
+
+<p>The tessellation <em>evaluation</em> shader takes the result of the tessellation that
+the tessellation <em>control</em> shader has specified. This shader is called once for
+every vertex output during tessellation (including original corners). It has
+access to the attribute information of the original corners (e.g., in our code
+<code>in vec3 pos_es_in[]</code>) and a special variable <code>gl_TessCoord</code> containing the
+<a href="https://en.wikipedia.org/wiki/Barycentric_coordinate_system">barycentric
+coordinates</a> of the
+current vertex. Using this information, it is possible to interpolate
+information stored at the original corners onto the current vertex: for example,
+the 3D position. Like the vertex and tessellation control shader, this shader
+can change the 3D position of a vertex. This is the <em>last opportunity</em> to do
+that, since the fragment shader cannot.</p>
+
+<h3 id="howcomeicantuseinclude">How come I can&#8217;t use <code>#include</code>?</h3>
+
+<p>Our glsl shader programs are not compiled from files. Instead the
+CPU-side program must read the file contents into memory as strings and provide
+the raw strings to the shader compiler. Unfortunately, this means there is no
+<code>#include</code> preprocessor directive and sharing code across different shaders is a
+burden.</p>
+
+<p>In this assignment, we will use a <code>.json</code> file to collect the different files
+whose contents are <em><strong>concatenated</strong></em> to form the input string to be compiled
+for each shader. For example, in <code>data/test-01.json</code> you&#8217;ll see:</p>
+
+<pre><code>{
+  &quot;vertex&quot;: [ &quot;../src/version410.glsl&quot;,&quot;../src/pass-through.vs&quot;],
+  &quot;tess_control&quot;: [ &quot;../src/version410.glsl&quot;,&quot;../src/pass-through.tcs&quot;],
+  &quot;tess_evaluation&quot;: [ &quot;../src/version410.glsl&quot;,&quot;../src/pass-through.tes&quot;],
+  &quot;fragment&quot;: [ &quot;../src/version410.glsl&quot;,&quot;../src/pass-through.fs&quot;]
+}
+</code></pre>
+
+<p>This indicates that the string for the vertex shader is the concatenation of two
+(2) files <code>../src/version410.glsl</code> and then <code>&quot;../solution/pass-through.glsl</code>.
+Similarly, for each of the other shaders.</p>
+
+<h3 id="shaderdebugging">Shader debugging</h3>
+
+<p>Debugging shader programs must be done visually. Since we only see the result of
+<em>all</em> computation, we can use the shader pipeline&#8217;s ability to set screen colors
+to debug <em>all</em> computation simultaneously. For example, when debugging the
+fragment shader we can check all values at once by setting the pixel color to a
+value we expect (or don&#8217;t expect) depending on the computation. A few useful
+commands come in handy:</p>
+
+<p><code>color = 0.5+0.5*n;</code> will set the color based on the normal.
+<img src="images/normal-debug.png" alt="" /></p>
+
+<p><code>color = vec3(0.5,0.5,0)+vec3(0.5,0.5,0)*view_pos_fs_in.xyz</code> will set the color based on the 2D position.
+<img src="images/position-debug.png" alt="" /></p>
+
+<p><code>color = (1+(view_pos_fs_in.z - -3)/5)*vec3(1,1,1);</code> will set the color based on
+the distance to the camera in the z-direction.</p>
+
+<figure>
+<img src="images/distance-debug.png" alt="" />
+</figure>
+
+<p><code>color = vec3(float(is_moon),1,0);</code> will set the color to yellow or green based
+on a boolean value (in this case <code>is_moon</code>).</p>
+
+<figure>
+<img src="images/bool-debug.png" alt="" />
+</figure>
+
+<h2 id="tasks">Tasks</h2>
 
 <h3 id="whitelist">White list</h3>
 
 <ul>
-<li><code>mix</code></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/mix.xhtml"><code>mix</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/normalize.xhtml"><code>normalize</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/length.xhtml"><code>length</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/clamp.xhtml"><code>clamp</code></a></li>
 </ul>
 
 <h3 id="blacklist">Black list</h3>
 
-<h3 id="model_view_projection.vs"><code>model_view_projection.vs</code></h3>
+<ul>
+<li><code>noise1</code></li>
+<li><code>noise2</code></li>
+<li><code>noise3</code></li>
+<li><code>noise4</code></li>
+</ul>
 
-<h3 id="blue_and_gray.fs"><code>blue_and_gray.fs</code></h3>
+<p>Unlike previous assignments, this assignment works best if you implement the
+following tasks <em>in order</em>.</p>
 
-<figure>
-<img src="images/blue-and-gray.gif" alt="Running ./shader_pipeline ../src/model_view_projection.vs
-../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs should produce an
-animation of a gray moon orbiting around a blue
-planet." />
-<figcaption>Running <code>./shader_pipeline ../src/model_view_projection.vs
-../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs</code> should produce an
-animation of a gray moon orbiting around a blue
-planet.</figcaption>
-</figure>
+<p>Before editing anything be sure that your opengl and shader setup is correct. If you run <code>./shaderpipeline ../data/test-01.json</code> you should see this
+image: <img src="images/test-01.png" alt="" /></p>
 
-<figure>
-<img src="images/blue-and-gray-wireframe.gif" alt="Running ./shader_pipeline ../src/model_view_projection.vs
-../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs and pressing L should produce an
-animation of a gray moon orbiting around a blue
-planet in wireframe." />
-<figcaption>Running <code>./shader_pipeline ../src/model_view_projection.vs
-../src/pass-through.{tcs,tes} ../src/blue_and_gray.fs</code> and pressing <code>L</code> should produce an
-animation of a gray moon orbiting around a blue
-planet in wireframe.</figcaption>
-</figure>
+<h3 id="srcidentity.glsl"><code>src/identity.glsl</code></h3>
 
-<h3 id="5.tcs"><code>5.tcs</code></h3>
+<h3 id="srcuniform_scale.glsl"><code>src/uniform_scale.glsl</code></h3>
 
-<figure>
-<img src="images/5-wireframe.gif" alt="Running ./shader_pipeline ../src/model_view_projection.vs ../src/5.tcs
-../src/pass-through.tes ../src/blue_and_gray.fs and pressing L should produce an
-animation of a gray moon orbiting around a blue
-planet in wireframe with more triangles." />
-<figcaption>Running <code>./shader_pipeline ../src/model_view_projection.vs ../src/5.tcs
-../src/pass-through.tes ../src/blue_and_gray.fs</code> and pressing <code>L</code> should produce an
-animation of a gray moon orbiting around a blue
-planet in wireframe with more triangles.</figcaption>
-</figure>
+<h3 id="srctranslate.glsl"><code>src/translate.glsl</code></h3>
 
-<h3 id="model_view_projection.tes"><code>model_view_projection.tes</code></h3>
+<h3 id="srcrotate_about_y.glsl"><code>src/rotate_about_y.glsl</code></h3>
+
+<h3 id="srcmodel_view_projection.vs"><code>src/model_view_projection.vs</code></h3>
+
+<h3 id="srcblue_and_gray.fs"><code>src/blue_and_gray.fs</code></h3>
+
+<p>With these implemented you should now be able to run <code>./shaderpipeline
+../data/test-02.json</code> and see an animation of a gray moon orbiting around a blue
+planet: <img src="images/test-02.gif" alt="" /></p>
+
+<p>If you press <code>L</code> this should switch to a <a href="">wireframe</a> rendering:
+<img src="images/test-02-wireframe.gif" alt="" /></p>
+
+<h3 id="src5.tcs"><code>src/5.tcs</code></h3>
+
+<p>Running <code>./shaderpipeline ../data/test-03.json</code> and pressing <code>L</code> should produce an
+animation of a gray moon orbiting around a blue planet in wireframe with more
+triangles: <img src="images/test-03-wireframe.gif" alt="" /></p>
+
+<h3 id="snap_to_sphere.tes"><code>snap_to_sphere.tes</code></h3>
+
+<p>Move your model-view-projection operations from the vertex shader (e.g.,
+<code>model_view_projection.vs</code>) to the tessellation evaluation shader. In addition,
+snap the vertices of each shape to the unit sphere before applying these
+transformations. This gives your shapes a round appearance if you run
+<code>./shaderpipeline ../data/test-04.json</code>: <img src="images/test-04.gif" alt="" /></p>
+
+<h3 id="blinn_phong.glsl"><code>blinn_phong.glsl</code></h3>
+
+<h3 id="lit.glsl"><code>lit.glsl</code></h3>
+
+<p>Running <code>./shaderpipeline ../data/test-05.json</code> adds light to the scene and we
+see a smooth appearance with specular highlights: <img src="images/test-05.gif" alt="" /></p>
+
+<h3 id="random_direction.glsl"><code>random_direction.glsl</code></h3>
+
+<h3 id="noise.glsl"><code>noise.glsl</code></h3>
+
+<h3 id="procedural_color.glsl"><code>procedural_color.glsl</code></h3>
+
+<p>Running <code>./shaderpipeline ../data/test-06.json</code> adds a procedural <em>color</em> to the
+objects. The color should <em><strong>not</strong></em> change based on the view or model
+transformation. For example, this animation attempts to recreate a
+<a href="https://en.wikipedia.org/wiki/Marble">marble</a> texture: <img src="images/test-06.gif" alt="" /></p>
+
+<h3 id="improved_smooth_step.glsl"><code>improved_smooth_step.glsl</code></h3>
+
+<h3 id="smooth_heaviside.glsl"><code>smooth_heaviside.glsl</code></h3>
+
+<h3 id="improved_perlin_noise.glsl"><code>improved_perlin_noise.glsl</code></h3>
+
+<h3 id="bump_position.glsl"><code>bump_position.glsl</code></h3>
+
+<h3 id="bump.fs"><code>bump.fs</code></h3>
+
+<p>Running <code>./shaderpipeline ../data/test-07.json</code> adds a <a href="https://en.wikipedia.org/wiki/Normal_mapping">normal
+map</a> determined by differentiating
+a procedural <a href="https://en.wikipedia.org/wiki/Bump_mapping">bump map</a>. The color
+should <em><strong>not</strong></em> change based on the view or model transformation. For example,
+this animation attempts to recreate the (very) bumpy appearance of planets and
+moons: <img src="images/test-07.gif" alt="" /></p>
+
+<h3 id="planet.fs"><code>planet.fs</code></h3>
+
+<p>Running <code>./shaderpipeline ../data/test-08.json</code> should display a creative planet
+scene. For example: <img src="images/test-08.gif" alt="" /></p>
 
 </body>
 </html>

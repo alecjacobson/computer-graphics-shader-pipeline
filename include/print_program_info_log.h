@@ -4,6 +4,8 @@
 #include "gl.h"
 #include <string>
 
+// Print information about a given glsl shader program.
+//
 // Inputs:
 //   obj  id of object we're querying
 // Returns true if printed anything.

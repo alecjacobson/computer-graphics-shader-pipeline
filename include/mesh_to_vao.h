@@ -3,6 +3,13 @@
 #include "gl.h"
 #include <Eigen/Core>
 
+// Send a triangle mesh to the GPU using a vertex array object.
+//
+// Inputs:
+//   V  #V by 3 list of 3D mesh vertex positions
+//   F  #F by 3 list of triangle indices into V
+// Outputs:
+//   VAO  identifier of compiled vertex array object.
 inline void mesh_to_vao(
   const Eigen::Matrix< float,Eigen::Dynamic,3,Eigen::RowMajor> & V,
   const Eigen::Matrix<GLuint,Eigen::Dynamic,3,Eigen::RowMajor> & F,

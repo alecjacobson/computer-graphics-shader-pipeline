@@ -5,10 +5,15 @@
 #include <string>
 #include <vector>
 
+// Print information (e.g., compilation errors and warnings) about a give glsl
+// shader.
+//
 // Inputs:
 //   type_str  string identifying which kind of shader we're asking about (just
 //   a prefix to print)
 //   obj  id of object we're querying
+//   paths  list of file paths containing corresponding shader source code
+//     (assumings `#line ...` directive has been inserted between files).
 // Returns true if printed anything.
 bool print_shader_info_log(
   const std::string & type_str, 

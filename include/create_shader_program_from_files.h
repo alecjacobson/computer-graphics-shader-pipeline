@@ -4,6 +4,22 @@
 #include <string>
 #include <vector>
 
+// Create a GLSL shader program given a list of paths containing shader code for
+// each shader in the vertex-tessellation-fragment shader pipeline. Prints error
+// messages on failure.
+//
+// Inputs:
+//   vertex_shader_paths  ordered list of paths to files containing glsl vertex
+//     shader code.
+//   tess_control_shader_paths  ordered list of paths to files containing glsl
+//     tessellation control shader code.
+//   tess_evaluation_shader_paths  ordered list of paths to files containing glsl
+//     tessellation evaluation shader code.
+//   fragment_shader_paths  ordered list of paths to files containing glsl fragment
+//     shader code.
+//  Outputs:
+//    id  identifier of compiled shader program
+//  Returns true iff success
 inline bool create_shader_program_from_files(
   const std::vector<std::string> & vertex_shader_paths,
   const std::vector<std::string> & tess_control_shader_paths,

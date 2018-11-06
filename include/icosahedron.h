@@ -1,6 +1,12 @@
 #ifndef ICOSAHEDRON_H
 #define ICOSAHEDRON_H
 #include <Eigen/Core>
+
+// Construct a triangle mesh of an icosahedron.
+//
+// Outputs:
+//   V  12 by 3 list of 3D mesh vertex positions
+//   F  20 by 3 list of triangle indices into V
 template <
   typename DerivedV,
   typename DerivedF
@@ -8,7 +14,9 @@ template <
 inline void icosahedron(
   Eigen::PlainObjectBase<DerivedV> & V,
   Eigen::PlainObjectBase<DerivedF> & F);
+
 // Implementation
+
 template <
   typename DerivedV,
   typename DerivedF

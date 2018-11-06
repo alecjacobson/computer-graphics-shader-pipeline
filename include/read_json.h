@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+// Read a shader specification from a .json file
+//
 // Input:
 //   filename  path to .json file
 // Outputs:

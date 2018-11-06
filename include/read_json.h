@@ -2,6 +2,7 @@
 #define READ_JSON_H
 
 #include <string>
+#include <vector>
 
 // Input:
 //   filename  path to .json file

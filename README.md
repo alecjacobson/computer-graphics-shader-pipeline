@@ -10,7 +10,7 @@
 
 ## Background
 
-### Review chapters 6, 7 and sections 8.1-8.2 of _Fundamentals of Computer Graphics (4th Edition)_.
+> ### Review chapters 6, 7 and sections 8.1-8.2 of _Fundamentals of Computer Graphics (4th Edition)_.
 
 ### Read Sections 11.4-11.5 and Chapter 17  of _Fundamentals of Computer Graphics (4th Edition)_.
 
@@ -211,9 +211,11 @@ value we expect (or don't expect) depending on the computation. A few useful
 commands come in handy:
 
 `color = 0.5+0.5*n;` will set the color based on the normal.
+
 ![](images/normal-debug.png)
 
 `color = vec3(0.5,0.5,0)+vec3(0.5,0.5,0)*view_pos_fs_in.xyz` will set the color based on the 2D position.
+
 ![](images/position-debug.png)
 
 `color = (1+(view_pos_fs_in.z - -3)/5)*vec3(1,1,1);` will set the color based on
@@ -226,8 +228,74 @@ on a boolean value (in this case `is_moon`).
 
 ![](images/bool-debug.png)
 
+## Bump and normal maps
+
+A **bump map** is a mapping from a surface point to a displacement along the
+normal direction. A **normal map** is a mapping from a surface point to a unit
+normal vector. In a mathematical sense, a normal map is non-sense. A point on a
+surface has a specific normal completely determined by its local geometry. The
+normal is the direction that goes in the _most outward_ direction from the
+surface. That is, the normal is perpendicular to the surface. Since a surface
+is two dimensional, the directions that _stay on_ the surface are spanned by a
+two dimensional _tangent plane_.
+
+Normal mapping is useful in computer graphics because we can drape the
+appearance of a complex surface on top a low resolution and simple one. To
+create a consistent and believable looking normal map, we can first generate a
+plausible bump map. Each point $\mathbf{p}∈ \mathbb{R}³$ on the surface is moved to a new
+position $\mathbf{\tilde{p}} ∈ \mathbb{R}³$:
+
+\\[
+\mathbf{\tilde{p}}(\mathbf{p}) := \mathbf{p} + h(\mathbf{p}) \ \mathbf{\hat{n}}(\mathbf{p}) ,
+\\]
+where $h : \mathbb{R}³ → \mathbb{R}$ is the bump height amount function (could
+be negative) and $\mathbf{\hat{n}}(\mathbf{p}) : \mathbb{R}³ → \mathbb{R}³$ is the
+_mathematically_ correct normal at $\mathbf{p}$.
+
+If our bump height $h$ is a smooth function over the surface, we can compute the
+_perceived_ normal vector $\mathbf{\tilde{n}}$ by taking a small [finite
+difference](https://en.wikipedia.org/wiki/Finite_difference) of the 3D position:
+
+\\[
+\mathbf{\tilde{n}} = \frac{∂\ \mathbf{p}}{∂\ \mathbf{T}} ×
+\frac{∂\ \mathbf{p}}{∂\ \mathbf{B}} ≈ 
+\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + ε \mathbf{T}})-\mathbf{\tilde{p}}(\mathbf{p})}{ε}\right) ×
+\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + ε \mathbf{B}})-\mathbf{\tilde{p}}(\mathbf{p})}{ε}\right)
+\\]
+where $\mathbf{T},\mathbf{B}∈ \mathbb{R}³$ are orthogonal [tangent and
+bi-tangent vectors](https://en.wikipedia.org/wiki/Tangent_vector) in the tangent
+plane at $\mathbf{p}$ and $ε$ is a small number (e.g., `0.0001`). By abuse of
+notation, we'll make sure that this approximate perceived normal is unit length
+by dividing by its length:
+
+\\[
+\mathbf{\tilde{n}} ←
+\frac{\mathbf{\tilde{n}}}{‖\mathbf{\tilde{n}}‖}.
+\\]
+
+> **Question:** Can we always recover _some_ orthogonal tangent vectors $\mathbf{T}$ and $\mathbf{B}$ from
+> the unit normal 
+> $\mathbf{n}$ ?
+>
+> **Hint:** ☝️
+>
 
 ## Tasks
+
+There are no [header files](https://stackoverflow.com/a/19709740/148668).
+Accordingly, this assignment is organized a bit differently. The `src/`
+directory contains glsl files whose contents should be completed or replaced.
+Some of the functions have an element of creative freedom (e.g.,
+`src/bump_position.glsl`), while others are have a well-defined specification
+(e.g., `src/identity.glsl`).
+
+Since glsl does not support `#include`, the comments may hint that a previously
+defined function can/should/must be used by writing `// expects: ...`.
+
+You may check the corresponding `.json` example file to see specifically which
+glsl files are loaded (and in which order) for each test program.
+
+Unless otherwise noted, _**do not declare new functions**_. 
 
 ### White list
 
@@ -235,6 +303,10 @@ on a boolean value (in this case `is_moon`).
   - [`normalize`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/normalize.xhtml)
   - [`length`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/length.xhtml)
   - [`clamp`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/clamp.xhtml)
+  - [`sin`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/sin.xhtml)
+  - [`cos`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/cos.xhtml)
+  - [`abs`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/abs.xhtml)
+  - [`pow`](https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/pow.xhtml)
 
 ### Black list
  
@@ -243,11 +315,12 @@ on a boolean value (in this case `is_moon`).
   - `noise3`
   - `noise4`
 
-Unlike previous assignments, this assignment works best if you implement the
-following tasks _in order_.
+This assignment works best if you implement the following tasks _in order_.
 
 Before editing anything be sure that your opengl and shader setup is correct. If you run `./shaderpipeline ../data/test-01.json` you should see this
-image: ![](images/test-01.png)
+image: 
+
+![](images/test-01.png)
 
 
 ### `src/identity.glsl`
@@ -264,16 +337,21 @@ image: ![](images/test-01.png)
 
 With these implemented you should now be able to run `./shaderpipeline
 ../data/test-02.json` and see an animation of a gray moon orbiting around a blue
-planet: ![](images/test-02.gif)
+planet: 
+
+![](images/test-02.gif)
 
 If you press `L` this should switch to a [wireframe]() rendering:
+
 ![](images/test-02-wireframe.gif)
 
 ### `src/5.tcs`
 
 Running `./shaderpipeline ../data/test-03.json` and pressing `L` should produce an
 animation of a gray moon orbiting around a blue planet in wireframe with more
-triangles: ![](images/test-03-wireframe.gif)
+triangles: 
+
+![](images/test-03-wireframe.gif)
 
 ### `snap_to_sphere.tes`
 
@@ -281,14 +359,18 @@ Move your model-view-projection operations from the vertex shader (e.g.,
 `model_view_projection.vs`) to the tessellation evaluation shader. In addition,
 snap the vertices of each shape to the unit sphere before applying these
 transformations. This gives your shapes a round appearance if you run
-`./shaderpipeline ../data/test-04.json`: ![](images/test-04.gif)
+`./shaderpipeline ../data/test-04.json`: 
+
+![](images/test-04.gif)
 
 ### `blinn_phong.glsl`
 
 ### `lit.glsl`
 
 Running `./shaderpipeline ../data/test-05.json` adds light to the scene and we
-see a smooth appearance with specular highlights: ![](images/test-05.gif)
+see a smooth appearance with specular highlights: 
+
+![](images/test-05.gif)
 
 ### `random_direction.glsl`
 
@@ -299,13 +381,17 @@ see a smooth appearance with specular highlights: ![](images/test-05.gif)
 Running `./shaderpipeline ../data/test-06.json` adds a procedural _color_ to the
 objects. The color should _**not**_ change based on the view or model
 transformation. For example, this animation attempts to recreate a
-[marble](https://en.wikipedia.org/wiki/Marble) texture: ![](images/test-06.gif)
+[marble](https://en.wikipedia.org/wiki/Marble) texture: 
+
+![](images/test-06.gif)
 
 ### `improved_smooth_step.glsl`
 
 ### `smooth_heaviside.glsl`
 
 ### `improved_perlin_noise.glsl`
+
+### `bump_height.glsl`
 
 ### `bump_position.glsl`
 
@@ -316,9 +402,19 @@ map](https://en.wikipedia.org/wiki/Normal_mapping) determined by differentiating
 a procedural [bump map](https://en.wikipedia.org/wiki/Bump_mapping). The color
 should _**not**_ change based on the view or model transformation. For example,
 this animation attempts to recreate the (very) bumpy appearance of planets and
-moons: ![](images/test-07.gif)
+moons: 
+
+![](images/test-07.gif)
+
+For this file, you _**may**_ declare new functions: declare them directly at the
+top of `bump.fs`; do not modify the .json files.
 
 ### `planet.fs`
 
+For this file, you _**may**_ declare new functions: declare them directly at the
+top of `planet.fs`; do not modify the .json files.
+
 Running `./shaderpipeline ../data/test-08.json` should display a creative planet
-scene. For example: ![](images/test-08.gif)
+scene. For example: 
+
+![](images/test-08.gif)

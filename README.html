@@ -2,11 +2,12 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
-	<title>markdown
-&lt;!-- For some reason having this &quot;title: markdown&quot; line triggers multimarkdown
-into adding a proper header and DOCTYPE necessary for unicode text --&gt;</title>
+	<title>README.md</title>
 </head>
 <body>
+
+<!-- For some reason having a "title: markdown" line triggers multimarkdown
+into adding a proper header and DOCTYPE necessary for unicode text -->
 
 <p><link rel="stylesheet" href="file:///Users/ajx/.markdown/github-markdown.css">
 <style>
@@ -49,7 +50,9 @@ into adding a proper header and DOCTYPE necessary for unicode text --&gt;</title
 
 <h2 id="background">Background</h2>
 
+<blockquote>
 <h3 id="reviewchapters67andsections8.1-8.2offundamentalsofcomputergraphics4thedition.">Review chapters 6, 7 and sections 8.1&#8211;8.2 of <em>Fundamentals of Computer Graphics (4th Edition)</em>.</h3>
+</blockquote>
 
 <h3 id="readsections11.4-11.5andchapter17offundamentalsofcomputergraphics4thedition.">Read Sections 11.4&#8211;11.5 and Chapter 17 of <em>Fundamentals of Computer Graphics (4th Edition)</em>.</h3>
 
@@ -248,11 +251,17 @@ fragment shader we can check all values at once by setting the pixel color to a
 value we expect (or don&#8217;t expect) depending on the computation. A few useful
 commands come in handy:</p>
 
-<p><code>color = 0.5+0.5*n;</code> will set the color based on the normal.
-<img src="images/normal-debug.png" alt="" /></p>
+<p><code>color = 0.5+0.5*n;</code> will set the color based on the normal.</p>
 
-<p><code>color = vec3(0.5,0.5,0)+vec3(0.5,0.5,0)*view_pos_fs_in.xyz</code> will set the color based on the 2D position.
-<img src="images/position-debug.png" alt="" /></p>
+<figure>
+<img src="images/normal-debug.png" alt="" />
+</figure>
+
+<p><code>color = vec3(0.5,0.5,0)+vec3(0.5,0.5,0)*view_pos_fs_in.xyz</code> will set the color based on the 2D position.</p>
+
+<figure>
+<img src="images/position-debug.png" alt="" />
+</figure>
 
 <p><code>color = (1+(view_pos_fs_in.z - -3)/5)*vec3(1,1,1);</code> will set the color based on
 the distance to the camera in the z-direction.</p>
@@ -268,7 +277,75 @@ on a boolean value (in this case <code>is_moon</code>).</p>
 <img src="images/bool-debug.png" alt="" />
 </figure>
 
+<h2 id="bumpandnormalmaps">Bump and normal maps</h2>
+
+<p>A <strong>bump map</strong> is a mapping from a surface point to a displacement along the
+normal direction. A <strong>normal map</strong> is a mapping from a surface point to a unit
+normal vector. In a mathematical sense, a normal map is non-sense. A point on a
+surface has a specific normal completely determined by its local geometry. The
+normal is the direction that goes in the <em>most outward</em> direction from the
+surface. That is, the normal is perpendicular to the surface. Since a surface
+is two dimensional, the directions that <em>stay on</em> the surface are spanned by a
+two dimensional <em>tangent plane</em>.</p>
+
+<p>Normal mapping is useful in computer graphics because we can drape the
+appearance of a complex surface on top a low resolution and simple one. To
+create a consistent and believable looking normal map, we can first generate a
+plausible bump map. Each point <span class="math">\(\mathbf{p}∈ \mathbb{R}³\)</span> on the surface is moved to a new
+position <span class="math">\(\mathbf{\tilde{p}} ∈ \mathbb{R}³\)</span>:</p>
+
+<p><span class="math">\[
+\mathbf{\tilde{p}}(\mathbf{p}) := \mathbf{p} + h(\mathbf{p}) \ \mathbf{\hat{n}}(\mathbf{p}) ,
+\]</span>
+where <span class="math">\(h : \mathbb{R}³ → \mathbb{R}\)</span> is the bump height amount function (could
+be negative) and <span class="math">\(\mathbf{\hat{n}}(\mathbf{p}) : \mathbb{R}³ → \mathbb{R}³\)</span> is the
+<em>mathematically</em> correct normal at <span class="math">\(\mathbf{p}\)</span>.</p>
+
+<p>If our bump height <span class="math">\(h\)</span> is a smooth function over the surface, we can compute the
+<em>perceived</em> normal vector <span class="math">\(\mathbf{\tilde{n}}\)</span> by taking a small <a href="https://en.wikipedia.org/wiki/Finite_difference">finite
+difference</a> of the 3D position:</p>
+
+<p><span class="math">\[
+\mathbf{\tilde{n}} = \frac{∂\ \mathbf{p}}{∂\ \mathbf{T}} ×
+\frac{∂\ \mathbf{p}}{∂\ \mathbf{B}} ≈ 
+\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + ε \mathbf{T}})-\mathbf{\tilde{p}}(\mathbf{p})}{ε}\right) ×
+\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + ε \mathbf{B}})-\mathbf{\tilde{p}}(\mathbf{p})}{ε}\right)
+\]</span>
+where <span class="math">\(\mathbf{T},\mathbf{B}∈ \mathbb{R}³\)</span> are orthogonal <a href="https://en.wikipedia.org/wiki/Tangent_vector">tangent and
+bi-tangent vectors</a> in the tangent
+plane at <span class="math">\(\mathbf{p}\)</span> and <span class="math">\(ε\)</span> is a small number (e.g., <code>0.0001</code>). By abuse of
+notation, we&#8217;ll make sure that this approximate perceived normal is unit length
+by dividing by its length:</p>
+
+<p><span class="math">\[
+\mathbf{\tilde{n}} ←
+\frac{\mathbf{\tilde{n}}}{‖\mathbf{\tilde{n}}‖}.
+\]</span></p>
+
+<blockquote>
+<p><strong>Question:</strong> Can we always recover <em>some</em> orthogonal tangent vectors <span class="math">\(\mathbf{T}\)</span> and <span class="math">\(\mathbf{B}\)</span> from
+the unit normal
+<span class="math">\(\mathbf{n}\)</span> ?</p>
+
+<p><strong>Hint:</strong> ☝️</p>
+</blockquote>
+
 <h2 id="tasks">Tasks</h2>
+
+<p>There are no <a href="https://stackoverflow.com/a/19709740/148668">header files</a>.
+Accordingly, this assignment is organized a bit differently. The <code>src/</code>
+directory contains glsl files whose contents should be completed or replaced.
+Some of the functions have an element of creative freedom (e.g.,
+<code>src/bump_position.glsl</code>), while others are have a well-defined specification
+(e.g., <code>src/identity.glsl</code>).</p>
+
+<p>Since glsl does not support <code>#include</code>, the comments may hint that a previously
+defined function can/should/must be used by writing <code>// expects: ...</code>.</p>
+
+<p>You may check the corresponding <code>.json</code> example file to see specifically which
+glsl files are loaded (and in which order) for each test program.</p>
+
+<p>Unless otherwise noted, <em><strong>do not declare new functions</strong></em>. </p>
 
 <h3 id="whitelist">White list</h3>
 
@@ -277,6 +354,10 @@ on a boolean value (in this case <code>is_moon</code>).</p>
 <li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/normalize.xhtml"><code>normalize</code></a></li>
 <li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/length.xhtml"><code>length</code></a></li>
 <li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/clamp.xhtml"><code>clamp</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/sin.xhtml"><code>sin</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/cos.xhtml"><code>cos</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/abs.xhtml"><code>abs</code></a></li>
+<li><a href="https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/pow.xhtml"><code>pow</code></a></li>
 </ul>
 
 <h3 id="blacklist">Black list</h3>
@@ -288,11 +369,14 @@ on a boolean value (in this case <code>is_moon</code>).</p>
 <li><code>noise4</code></li>
 </ul>
 
-<p>Unlike previous assignments, this assignment works best if you implement the
-following tasks <em>in order</em>.</p>
+<p>This assignment works best if you implement the following tasks <em>in order</em>.</p>
 
 <p>Before editing anything be sure that your opengl and shader setup is correct. If you run <code>./shaderpipeline ../data/test-01.json</code> you should see this
-image: <img src="images/test-01.png" alt="" /></p>
+image: </p>
+
+<figure>
+<img src="images/test-01.png" alt="" />
+</figure>
 
 <h3 id="srcidentity.glsl"><code>src/identity.glsl</code></h3>
 
@@ -308,16 +392,27 @@ image: <img src="images/test-01.png" alt="" /></p>
 
 <p>With these implemented you should now be able to run <code>./shaderpipeline
 ../data/test-02.json</code> and see an animation of a gray moon orbiting around a blue
-planet: <img src="images/test-02.gif" alt="" /></p>
+planet: </p>
 
-<p>If you press <code>L</code> this should switch to a <a href="">wireframe</a> rendering:
-<img src="images/test-02-wireframe.gif" alt="" /></p>
+<figure>
+<img src="images/test-02.gif" alt="" />
+</figure>
+
+<p>If you press <code>L</code> this should switch to a <a href="">wireframe</a> rendering:</p>
+
+<figure>
+<img src="images/test-02-wireframe.gif" alt="" />
+</figure>
 
 <h3 id="src5.tcs"><code>src/5.tcs</code></h3>
 
 <p>Running <code>./shaderpipeline ../data/test-03.json</code> and pressing <code>L</code> should produce an
 animation of a gray moon orbiting around a blue planet in wireframe with more
-triangles: <img src="images/test-03-wireframe.gif" alt="" /></p>
+triangles: </p>
+
+<figure>
+<img src="images/test-03-wireframe.gif" alt="" />
+</figure>
 
 <h3 id="snap_to_sphere.tes"><code>snap_to_sphere.tes</code></h3>
 
@@ -325,14 +420,22 @@ triangles: <img src="images/test-03-wireframe.gif" alt="" /></p>
 <code>model_view_projection.vs</code>) to the tessellation evaluation shader. In addition,
 snap the vertices of each shape to the unit sphere before applying these
 transformations. This gives your shapes a round appearance if you run
-<code>./shaderpipeline ../data/test-04.json</code>: <img src="images/test-04.gif" alt="" /></p>
+<code>./shaderpipeline ../data/test-04.json</code>: </p>
+
+<figure>
+<img src="images/test-04.gif" alt="" />
+</figure>
 
 <h3 id="blinn_phong.glsl"><code>blinn_phong.glsl</code></h3>
 
 <h3 id="lit.glsl"><code>lit.glsl</code></h3>
 
 <p>Running <code>./shaderpipeline ../data/test-05.json</code> adds light to the scene and we
-see a smooth appearance with specular highlights: <img src="images/test-05.gif" alt="" /></p>
+see a smooth appearance with specular highlights: </p>
+
+<figure>
+<img src="images/test-05.gif" alt="" />
+</figure>
 
 <h3 id="random_direction.glsl"><code>random_direction.glsl</code></h3>
 
@@ -343,13 +446,19 @@ see a smooth appearance with specular highlights: <img src="images/test-05.gif" 
 <p>Running <code>./shaderpipeline ../data/test-06.json</code> adds a procedural <em>color</em> to the
 objects. The color should <em><strong>not</strong></em> change based on the view or model
 transformation. For example, this animation attempts to recreate a
-<a href="https://en.wikipedia.org/wiki/Marble">marble</a> texture: <img src="images/test-06.gif" alt="" /></p>
+<a href="https://en.wikipedia.org/wiki/Marble">marble</a> texture: </p>
+
+<figure>
+<img src="images/test-06.gif" alt="" />
+</figure>
 
 <h3 id="improved_smooth_step.glsl"><code>improved_smooth_step.glsl</code></h3>
 
 <h3 id="smooth_heaviside.glsl"><code>smooth_heaviside.glsl</code></h3>
 
 <h3 id="improved_perlin_noise.glsl"><code>improved_perlin_noise.glsl</code></h3>
+
+<h3 id="bump_height.glsl"><code>bump_height.glsl</code></h3>
 
 <h3 id="bump_position.glsl"><code>bump_position.glsl</code></h3>
 
@@ -360,12 +469,26 @@ map</a> determined by differentiating
 a procedural <a href="https://en.wikipedia.org/wiki/Bump_mapping">bump map</a>. The color
 should <em><strong>not</strong></em> change based on the view or model transformation. For example,
 this animation attempts to recreate the (very) bumpy appearance of planets and
-moons: <img src="images/test-07.gif" alt="" /></p>
+moons: </p>
+
+<figure>
+<img src="images/test-07.gif" alt="" />
+</figure>
+
+<p>For this file, you <em><strong>may</strong></em> declare new functions: declare them directly at the
+top of <code>bump.fs</code>; do not modify the .json files.</p>
 
 <h3 id="planet.fs"><code>planet.fs</code></h3>
 
+<p>For this file, you <em><strong>may</strong></em> declare new functions: declare them directly at the
+top of <code>planet.fs</code>; do not modify the .json files.</p>
+
 <p>Running <code>./shaderpipeline ../data/test-08.json</code> should display a creative planet
-scene. For example: <img src="images/test-08.gif" alt="" /></p>
+scene. For example: </p>
+
+<figure>
+<img src="images/test-08.gif" alt="" />
+</figure>
 
 </body>
 </html>

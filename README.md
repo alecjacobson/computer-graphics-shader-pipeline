@@ -367,7 +367,7 @@ transformations. This gives your shapes a round appearance if you run
 
 ### `blinn_phong.glsl`
 
-### `lit.glsl`
+### `lit.fs`
 
 Running `./shaderpipeline ../data/test-05.json` adds light to the scene and we
 see a smooth appearance with specular highlights: 

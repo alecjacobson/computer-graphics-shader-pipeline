@@ -331,9 +331,9 @@ image:
 
 ### `src/rotate_about_y.glsl`
 
-### `src/model_view_projection.vs`
-
 ### `src/model.glsl`
+
+### `src/model_view_projection.vs`
 
 ### `src/blue_and_gray.fs`
 

@@ -109,20 +109,21 @@ Usage:
   {
     ::width=_width,::height=_height;
 
-    float near = 0.01;
-    float far = 100;
-    float top = tan(35./360.*M_PI)*near;
+    // augh, windows can't handle variables named near and far.
+    float nearVal = 0.01;
+    float farVal = 100;
+    float top = tan(35./360.*M_PI)*nearVal;
     float right = top * (double)::width/(double)::height;
     float left = -right;
     float bottom = -top;
     proj.setConstant(4,4,0.);
-    proj(0,0) = (2.0 * near) / (right - left);
-    proj(1,1) = (2.0 * near) / (top - bottom);
+    proj(0,0) = (2.0 * nearVal) / (right - left);
+    proj(1,1) = (2.0 * nearVal) / (top - bottom);
     proj(0,2) = (right + left) / (right - left);
     proj(1,2) = (top + bottom) / (top - bottom);
-    proj(2,2) = -(far + near) / (far - near);
+    proj(2,2) = -(farVal + nearVal) / (farVal - nearVal);
     proj(3,2) = -1.0;
-    proj(2,3) = -(2.0 * far * near) / (far - near);
+    proj(2,3) = -(2.0 * farVal * nearVal) / (farVal - nearVal);
   };
   // Set up window resizing
   glfwSetWindowSizeCallback(window,reshape);

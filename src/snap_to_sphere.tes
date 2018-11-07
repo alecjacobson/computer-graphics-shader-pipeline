@@ -10,7 +10,7 @@ uniform mat4 proj;
 uniform float animation_seconds;
 uniform bool is_moon;
 // Inputs:
-//                    array of 3 3D path corner positions
+//                    array of 3 3D patch corner positions
 in vec4 pos_es_in[];
 // Outputs:
 //                   projected, view, and model transformed 3D position

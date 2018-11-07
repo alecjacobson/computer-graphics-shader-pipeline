@@ -183,7 +183,7 @@ implementation. As the shader programmer, you have control over:</p>
 
 <ul>
 <li>the number of new edges each input each should split into
-(<code>gl_TessLevelOuter[1] = 5</code> means the edge across from vertex <code>0</code> (i.e., the
+(<code>gl_TessLevelOuter[1] = 5</code> means the edge across from vertex <code>1</code> (i.e., the
 edge between vertices <code>0</code> and <code>2</code>) should be split into 5 edges); and</li>
 <li>the number of edges to place toward the center of the patch
 (<code>gl_TessLevelInner[0] = 5</code> would be a good choice if
@@ -197,7 +197,7 @@ responsibility of this shader is setting the <code>gl_TessLevelOuter</code> and
 
 <blockquote>
 <p><strong>Question:</strong> If the amount of subdivision along each edge is determined
-indecently for each triangle, how can we make sure neighboring triangles
+independently for each triangle, how can we make sure neighboring triangles
 subdivide their shared edge the same amount?</p>
 
 <p><strong>Hint:</strong> ✌️</p>

@@ -142,8 +142,8 @@ determined independently for each triangle and _not_ called recursively.
 The exact pattern of the resulting triangulation is left largely to
 implementation. As the shader programmer, you have control over:
 
-  - the number of new edges each input each  should split into
-    (`gl_TessLevelOuter[1] = 5` means the edge across from vertex `0` (i.e., the
+  - the number of new edges each input each should split into
+    (`gl_TessLevelOuter[1] = 5` means the edge across from vertex `1` (i.e., the
     edge between vertices `0` and `2`) should be split into 5 edges); and
   - the number of edges to place toward the center of the patch
     (`gl_TessLevelInner[0] = 5` would be a good choice if
@@ -155,7 +155,7 @@ responsibility of this shader is setting the `gl_TessLevelOuter` and
 `gl_TessLevelInner` variables.
 
 > **Question:** If the amount of subdivision along each edge is determined
-> indecently for each triangle, how can we make sure neighboring triangles
+> independently for each triangle, how can we make sure neighboring triangles
 > subdivide their shared edge the same amount?
 >
 > **Hint:** ✌️

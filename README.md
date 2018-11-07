@@ -333,6 +333,8 @@ image:
 
 ### `src/model_view_projection.vs`
 
+### `src/model.glsl`
+
 ### `src/blue_and_gray.fs`
 
 With these implemented you should now be able to run `./shaderpipeline

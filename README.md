@@ -376,7 +376,9 @@ see a smooth appearance with specular highlights:
 
 ### `random_direction.glsl`
 
-### `noise.glsl`
+### `smooth_step.glsl`
+
+### `perlin_noise.glsl`
 
 ### `procedural_color.glsl`
 

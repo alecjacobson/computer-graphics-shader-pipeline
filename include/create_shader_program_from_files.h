@@ -70,7 +70,7 @@ inline bool create_shader_program_from_files(
         buffer << t.rdbuf();
         if(p!=0)
         {
-          strs.push_back(STR("#line 1 "<<p<<std::endl));
+          strs.push_back(STR(std::endl<<"#line 1 "<<p<<std::endl));
         }
         strs.push_back(buffer.str());
         total_length += buffer.str().length();

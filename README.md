@@ -198,7 +198,7 @@ for each shader. For example, in `data/test-01.json` you'll see:
 ```
 
 This indicates that the string for the vertex shader is the concatenation of two
-(2) files `../src/version410.glsl` and then `"../solution/pass-through.glsl`.
+(2) files `../src/version410.glsl` and then `"../src/pass-through.vs"`.
 Similarly, for each of the other shaders.
 
 ### Shader debugging

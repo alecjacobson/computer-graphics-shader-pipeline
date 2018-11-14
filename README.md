@@ -382,6 +382,12 @@ see a smooth appearance with specular highlights:
 
 ### `procedural_color.glsl`
 
+Be creative! Your procedural colored shape does not need to look like marble
+specifically and does not need to match the example. Mix and match different
+noise frequencies and use [function
+composition](https://en.wikipedia.org/wiki/Function_composition) to create an
+interesting, complex pattern.
+
 Running `./shaderpipeline ../data/test-06.json` adds a procedural _color_ to the
 objects. The color should _**not**_ change based on the view or model
 transformation. For example, this animation attempts to recreate a
@@ -391,8 +397,6 @@ transformation. For example, this animation attempts to recreate a
 
 ### `improved_smooth_step.glsl`
 
-### `smooth_heaviside.glsl`
-
 ### `improved_perlin_noise.glsl`
 
 ### `bump_height.glsl`
@@ -400,6 +404,8 @@ transformation. For example, this animation attempts to recreate a
 ### `bump_position.glsl`
 
 ### `bump.fs`
+
+Be creative! Your bumpy shape does not need to match the example.
 
 Running `./shaderpipeline ../data/test-07.json` adds a [normal
 map](https://en.wikipedia.org/wiki/Normal_mapping) determined by differentiating
@@ -417,6 +423,9 @@ top of `bump.fs`; do not modify the .json files.
 
 For this file, you _**may**_ declare new functions: declare them directly at the
 top of `planet.fs`; do not modify the .json files.
+
+Be creative! Your planets do not need to look like the earth/moon and do not
+need to look like the example planets.
 
 Running `./shaderpipeline ../data/test-08.json` should display a creative planet
 scene. For example: 

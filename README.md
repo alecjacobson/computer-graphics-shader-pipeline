@@ -427,6 +427,9 @@ top of `planet.fs`; do not modify the .json files.
 Be creative! Your planets do not need to look like the earth/moon and do not
 need to look like the example planets.
 
+> **Hint:** Sprinkle noise on _everything_: diffuse color, specular color,
+> normals, specular exponents, color over time.
+
 Running `./shaderpipeline ../data/test-08.json` should display a creative planet
 scene. For example: 
 

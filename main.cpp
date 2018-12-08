@@ -14,6 +14,9 @@
 #include "report_gl_error.h"
 #include "create_shader_program_from_files.h"
 #include "last_modification_time.h"
+#ifdef USE_SOLUTION
+#  include "find_and_replace_all.h"
+#endif
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
@@ -247,6 +250,21 @@ Usage:
       {
         std::cerr<<"Failed to read "<<argv[1]<<std::endl;
       }
+#ifdef USE_SOLUTION
+      {
+        const auto replace_all = [](std::vector<std::string> & paths)
+        {
+          for(auto & path : paths)
+          {
+            find_and_replace_all("/src/","/solution/",path);
+          }
+        };
+        replace_all(vertex_shader_paths);
+        replace_all(tess_control_shader_paths);
+        replace_all(tess_evaluation_shader_paths);
+        replace_all(fragment_shader_paths);
+      }
+#endif
       // force reload of shaders
       time_of_last_shader_compilation = 0;
     }

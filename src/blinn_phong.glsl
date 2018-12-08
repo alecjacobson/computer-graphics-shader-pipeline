@@ -8,7 +8,7 @@
 //   ks  rgb specular color
 //   p  specular exponent (shininess)
 //   n  unit surface normal direction
-//   v  unit view direction
+//   v  unit direction from point on object to eye
 //   l  unit light direction
 // Returns rgb color
 vec3 blinn_phong(

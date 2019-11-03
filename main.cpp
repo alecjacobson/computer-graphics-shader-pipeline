@@ -163,6 +163,11 @@ Usage:
         case 'L':
         case 'l':
           wire_frame ^= 1;
+          if (wire_frame) {
+            glDisable(GL_CULL_FACE);
+          } else {
+            glEnable(GL_CULL_FACE);
+          }
           break;
         case 'Z':
         case 'z':

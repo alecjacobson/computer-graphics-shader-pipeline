@@ -403,6 +403,8 @@ transformation. For example, this animation attempts to recreate a
 
 ### `bump_position.glsl`
 
+### `tangent.glsl`
+
 ### `bump.fs`
 
 Be creative! Your bumpy shape does not need to match the example.

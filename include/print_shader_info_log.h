@@ -25,6 +25,8 @@ bool print_shader_info_log(
 #include "STR.h"
 #include "find_and_replace_all.h"
 
+#include <iostream>
+
 bool print_shader_info_log(
   const std::string & type_str, 
   const GLuint obj,

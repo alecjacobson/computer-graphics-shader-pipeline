@@ -30,6 +30,7 @@ inline bool create_shader_program_from_files(
 // Implementation
 
 #include <iostream>
+#include <fstream>
 #include "REDRUM.h"
 #include "STR.h"
 #include "print_shader_info_log.h"

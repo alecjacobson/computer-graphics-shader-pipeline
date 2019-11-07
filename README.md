@@ -6,6 +6,10 @@
 
 **Do not fork:** Clicking "Fork" will create a _public_ repository. If you'd like to use GitHub while you work on your assignment, then mirror this repo as a new _private_ repository: https://stackoverflow.com/questions/10065526/github-how-to-make-a-fork-of-public-repository-private
 
+> **Note for Windows users:** Windows Subsystem for Linux (WSL) is not supported
+> for this assignment. At the time of writing, it does not support OpenGL 4.x,
+> which is required for this assignment to run tessellation shaders.
+
 ![](images/earth.gif)
 
 ## Background

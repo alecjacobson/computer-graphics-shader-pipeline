@@ -1,5 +1,5 @@
 // Determine the perspective projection (do not conduct division) in homogenous
-// coordinates. If is_moon is true, then shrink the model by 30%, shift away
+// coordinates. If is_moon is true, then shrink the model by 70%, shift away
 // from the origin by 2 units and rotate around the origin at a frequency of 1
 // revolution per 4 seconds.
 //

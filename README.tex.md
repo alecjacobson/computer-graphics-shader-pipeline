@@ -253,8 +253,8 @@ $$
 \mathbf{\tilde{p}}(\mathbf{p}) := \mathbf{p} + h(\mathbf{p}) \ \mathbf{\widehat{n}}(\mathbf{p}) ,
 $$
 
-where $h : \mathbb{R}^3  \Rightarrow  \mathbb{R}$ is the bump height amount function (could
-be negative) and $\mathbf{\widehat{n}}(\mathbf{p}) : \mathbb{R}^3  \Rightarrow  \mathbb{R}^3 $ is the
+where $h : \mathbb{R}^3  \rightarrow  \mathbb{R}$ is the bump height amount function (could
+be negative) and $\mathbf{\widehat{n}}(\mathbf{p}) : \mathbb{R}^3  \rightarrow  \mathbb{R}^3 $ is the
 _mathematically_ correct normal at $\mathbf{p}$.
 
 If our bump height $h$ is a smooth function over the surface, we can compute the
@@ -275,8 +275,8 @@ notation, we'll make sure that this approximate perceived normal is unit length
 by dividing by its length:
 
 $$
-\mathbf{\tilde{n}} \Leftarrow 
-\frac{\mathbf{\tilde{n}}}{\| \mathbf{\tilde{n}}\| }.
+\mathbf{\tilde{n}} \leftarrow 
+\frac{\mathbf{\tilde{n}}}{\| \mathbf{\tilde{n}}\| }. 
 $$
 
 > **Question:** Can we always recover _some_ orthogonal tangent vectors $\mathbf{T}$ and $\mathbf{B}$ from

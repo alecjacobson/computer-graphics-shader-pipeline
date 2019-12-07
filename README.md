@@ -249,9 +249,8 @@ create a consistent and believable looking normal map, we can first generate a
 plausible bump map. Each point <img src="/tex/e9b7c44ac040760328d11f2e7d436527.svg?invert_in_darkmode&sanitize=true" align=middle width=49.018091099999985pt height=26.76175259999998pt/> on the surface is moved to a new
 position <img src="/tex/599a5166ad0520501c5d389abb0f34b8.svg?invert_in_darkmode&sanitize=true" align=middle width=49.018091099999985pt height=26.76175259999998pt/>:
 
-\\[
-\mathbf{\tilde{p}}(\mathbf{p}) := \mathbf{p} + h(\mathbf{p}) \ \mathbf{\widehat{n}}(\mathbf{p}) ,
-\\]
+<p align="center"><img src="/tex/15fe178ff3c20f9ccaf122aa40408229.svg?invert_in_darkmode&sanitize=true" align=middle width=167.4614931pt height=16.438356pt/></p>
+
 where <img src="/tex/ef68da33e858695fb6fa1867bc04cd31.svg?invert_in_darkmode&sanitize=true" align=middle width=79.85895389999999pt height=26.76175259999998pt/> is the bump height amount function (could
 be negative) and <img src="/tex/3dc6bff3f146e4a70a9167b7adfb75d0.svg?invert_in_darkmode&sanitize=true" align=middle width=110.73027404999999pt height=26.76175259999998pt/> is the
 _mathematically_ correct normal at <img src="/tex/980fcd4213d7b5d2ffcc82ec78c27ead.svg?invert_in_darkmode&sanitize=true" align=middle width=10.502226899999991pt height=14.611878600000017pt/>.
@@ -260,22 +259,15 @@ If our bump height <img src="/tex/2ad9d098b937e46f9f58968551adac57.svg?invert_in
 _perceived_ normal vector <img src="/tex/df092db5465f28cad5cd98f89fa50dd9.svg?invert_in_darkmode&sanitize=true" align=middle width=10.502226899999991pt height=22.831056599999986pt/> by taking a small [finite
 difference](https://en.wikipedia.org/wiki/Finite_difference) of the 3D position:
 
-\\[
-\mathbf{\tilde{n}} = \frac{\partial \ \mathbf{p}}{\partial \ \mathbf{T}} \times 
-\frac{\partial \ \mathbf{p}}{\partial \ \mathbf{B}} \approx  
-\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + \epsilon  \mathbf{T}})-\mathbf{\tilde{p}}(\mathbf{p})}{\epsilon }\right) \times 
-\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + \epsilon  \mathbf{B}})-\mathbf{\tilde{p}}(\mathbf{p})}{\epsilon }\right)
-\\]
+<p align="center"><img src="/tex/3e7a34f47d2caa11d496d74347a18799.svg?invert_in_darkmode&sanitize=true" align=middle width=471.00749025pt height=39.452455349999994pt/></p>
+
 where <img src="/tex/6fd1684d4ead55dc193d5263233c0a57.svg?invert_in_darkmode&sanitize=true" align=middle width=72.41977544999999pt height=26.76175259999998pt/> are orthogonal [tangent and
 bi-tangent vectors](https://en.wikipedia.org/wiki/Tangent_vector) in the tangent
 plane at <img src="/tex/980fcd4213d7b5d2ffcc82ec78c27ead.svg?invert_in_darkmode&sanitize=true" align=middle width=10.502226899999991pt height=14.611878600000017pt/> and <img src="/tex/1926c401973f24b4db4f35dca2eb381d.svg?invert_in_darkmode&sanitize=true" align=middle width=6.672392099999992pt height=14.15524440000002pt/> is a small number (e.g., `0.0001`). By abuse of
 notation, we'll make sure that this approximate perceived normal is unit length
 by dividing by its length:
 
-\\[
-\mathbf{\tilde{n}} \Leftarrow 
-\frac{\mathbf{\tilde{n}}}{\| \mathbf{\tilde{n}}\| }.
-\\]
+<p align="center"><img src="/tex/b83d238e84b2e2204d33e3b6bbeecc2f.svg?invert_in_darkmode&sanitize=true" align=middle width=71.52488145pt height=37.9216761pt/></p>
 
 > **Question:** Can we always recover _some_ orthogonal tangent vectors <img src="/tex/02f380174e367c8935a57f86907fc7da.svg?invert_in_darkmode&sanitize=true" align=middle width=13.15061054999999pt height=22.55708729999998pt/> and <img src="/tex/ff44d867a998c08241beb49b30148782.svg?invert_in_darkmode&sanitize=true" align=middle width=13.44741914999999pt height=22.55708729999998pt/> from
 > the unit normal 

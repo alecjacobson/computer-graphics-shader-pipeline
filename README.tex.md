@@ -246,14 +246,14 @@ two dimensional _tangent plane_.
 Normal mapping is useful in computer graphics because we can drape the
 appearance of a complex surface on top a low resolution and simple one. To
 create a consistent and believable looking normal map, we can first generate a
-plausible bump map. Each point $\mathbf{p}∈ \mathbb{R}³$ on the surface is moved to a new
-position $\mathbf{\tilde{p}} ∈ \mathbb{R}³$:
+plausible bump map. Each point $\mathbf{p}\in  \mathbb{R}^3 $ on the surface is moved to a new
+position $\mathbf{\tilde{p}} \in  \mathbb{R}^3 $:
 
 \\[
-\mathbf{\tilde{p}}(\mathbf{p}) := \mathbf{p} + h(\mathbf{p}) \ \mathbf{\hat{n}}(\mathbf{p}) ,
+\mathbf{\tilde{p}}(\mathbf{p}) := \mathbf{p} + h(\mathbf{p}) \ \mathbf{\widehat{n}}(\mathbf{p}) ,
 \\]
-where $h : \mathbb{R}³ → \mathbb{R}$ is the bump height amount function (could
-be negative) and $\mathbf{\hat{n}}(\mathbf{p}) : \mathbb{R}³ → \mathbb{R}³$ is the
+where $h : \mathbb{R}^3  \Rightarrow  \mathbb{R}$ is the bump height amount function (could
+be negative) and $\mathbf{\widehat{n}}(\mathbf{p}) : \mathbb{R}^3  \Rightarrow  \mathbb{R}^3 $ is the
 _mathematically_ correct normal at $\mathbf{p}$.
 
 If our bump height $h$ is a smooth function over the surface, we can compute the
@@ -261,20 +261,20 @@ _perceived_ normal vector $\mathbf{\tilde{n}}$ by taking a small [finite
 difference](https://en.wikipedia.org/wiki/Finite_difference) of the 3D position:
 
 \\[
-\mathbf{\tilde{n}} = \frac{∂\ \mathbf{p}}{∂\ \mathbf{T}} ×
-\frac{∂\ \mathbf{p}}{∂\ \mathbf{B}} ≈ 
-\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + ε \mathbf{T}})-\mathbf{\tilde{p}}(\mathbf{p})}{ε}\right) ×
-\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + ε \mathbf{B}})-\mathbf{\tilde{p}}(\mathbf{p})}{ε}\right)
+\mathbf{\tilde{n}} = \frac{\partial \ \mathbf{p}}{\partial \ \mathbf{T}} \times 
+\frac{\partial \ \mathbf{p}}{\partial \ \mathbf{B}} \approx  
+\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + \epsilon  \mathbf{T}})-\mathbf{\tilde{p}}(\mathbf{p})}{\epsilon }\right) \times 
+\left(\frac{\mathbf{\tilde{p}(\mathbf{p} + \epsilon  \mathbf{B}})-\mathbf{\tilde{p}}(\mathbf{p})}{\epsilon }\right)
 \\]
-where $\mathbf{T},\mathbf{B}∈ \mathbb{R}³$ are orthogonal [tangent and
+where $\mathbf{T},\mathbf{B}\in  \mathbb{R}^3 $ are orthogonal [tangent and
 bi-tangent vectors](https://en.wikipedia.org/wiki/Tangent_vector) in the tangent
-plane at $\mathbf{p}$ and $ε$ is a small number (e.g., `0.0001`). By abuse of
+plane at $\mathbf{p}$ and $\epsilon $ is a small number (e.g., `0.0001`). By abuse of
 notation, we'll make sure that this approximate perceived normal is unit length
 by dividing by its length:
 
 \\[
-\mathbf{\tilde{n}} ←
-\frac{\mathbf{\tilde{n}}}{‖\mathbf{\tilde{n}}‖}.
+\mathbf{\tilde{n}} \Leftarrow 
+\frac{\mathbf{\tilde{n}}}{\| \mathbf{\tilde{n}}\| }.
 \\]
 
 > **Question:** Can we always recover _some_ orthogonal tangent vectors $\mathbf{T}$ and $\mathbf{B}$ from

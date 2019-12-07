@@ -251,8 +251,8 @@ position <img src="/tex/599a5166ad0520501c5d389abb0f34b8.svg?invert_in_darkmode&
 
 <p align="center"><img src="/tex/15fe178ff3c20f9ccaf122aa40408229.svg?invert_in_darkmode&sanitize=true" align=middle width=167.4614931pt height=16.438356pt/></p>
 
-where <img src="/tex/ef68da33e858695fb6fa1867bc04cd31.svg?invert_in_darkmode&sanitize=true" align=middle width=79.85895389999999pt height=26.76175259999998pt/> is the bump height amount function (could
-be negative) and <img src="/tex/3dc6bff3f146e4a70a9167b7adfb75d0.svg?invert_in_darkmode&sanitize=true" align=middle width=110.73027404999999pt height=26.76175259999998pt/> is the
+where <img src="/tex/3f9da50841370c429266d54ea7e41469.svg?invert_in_darkmode&sanitize=true" align=middle width=79.85895389999999pt height=26.76175259999998pt/> is the bump height amount function (could
+be negative) and <img src="/tex/2dbb3b571269b3589a2967f510e6ecbb.svg?invert_in_darkmode&sanitize=true" align=middle width=110.73027404999999pt height=26.76175259999998pt/> is the
 _mathematically_ correct normal at <img src="/tex/980fcd4213d7b5d2ffcc82ec78c27ead.svg?invert_in_darkmode&sanitize=true" align=middle width=10.502226899999991pt height=14.611878600000017pt/>.
 
 If our bump height <img src="/tex/2ad9d098b937e46f9f58968551adac57.svg?invert_in_darkmode&sanitize=true" align=middle width=9.47111549999999pt height=22.831056599999986pt/> is a smooth function over the surface, we can compute the
@@ -267,7 +267,7 @@ plane at <img src="/tex/980fcd4213d7b5d2ffcc82ec78c27ead.svg?invert_in_darkmode&
 notation, we'll make sure that this approximate perceived normal is unit length
 by dividing by its length:
 
-<p align="center"><img src="/tex/b83d238e84b2e2204d33e3b6bbeecc2f.svg?invert_in_darkmode&sanitize=true" align=middle width=71.52488145pt height=37.9216761pt/></p>
+<p align="center"><img src="/tex/509fb6a370666a6736bbb7ab34494d6f.svg?invert_in_darkmode&sanitize=true" align=middle width=71.52488145pt height=37.9216761pt/></p>
 
 > **Question:** Can we always recover _some_ orthogonal tangent vectors <img src="/tex/02f380174e367c8935a57f86907fc7da.svg?invert_in_darkmode&sanitize=true" align=middle width=13.15061054999999pt height=22.55708729999998pt/> and <img src="/tex/ff44d867a998c08241beb49b30148782.svg?invert_in_darkmode&sanitize=true" align=middle width=13.44741914999999pt height=22.55708729999998pt/> from
 > the unit normal 
